@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#22243a">
+  <meta name="description" content="選好時間、心情和環境，抽一個現在就能開始的城市小活動。">
+  <title>城市微冒險｜抽一個現在就能做的小活動</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #22243a;
+      --panel: #2d3048;
+      --panel-soft: #373a53;
+      --ink: #f4f2e8;
+      --muted: #b9bbca;
+      --lime: #d9f06a;
+      --coral: #ff8a72;
+      --line: rgba(244, 242, 232, .15);
+      --sans: "Aptos", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--night);
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+    button, select { font: inherit; }
+    button { color: inherit; }
+    .page { width: min(1180px, calc(100% - 48px)); margin: 0 auto; padding: 30px 0 46px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; font-weight: 750; letter-spacing: .02em; }
+    .brand-mark { position: relative; width: 28px; height: 28px; border: 2px solid var(--lime); border-radius: 50% 50% 50% 5px; transform: rotate(-45deg); }
+    .brand-mark::after { position: absolute; content: ""; width: 7px; height: 7px; background: var(--lime); border-radius: 50%; top: 8px; left: 8px; }
+    .top-note { color: var(--muted); font-size: .86rem; }
+    .intro { display: grid; grid-template-columns: 1fr 340px; gap: 36px; align-items: end; padding: 45px 0 31px; }
+    h1 { max-width: 720px; margin: 0; font-size: clamp(2.25rem, 5vw, 4.35rem); line-height: 1.12; letter-spacing: -.045em; font-weight: 760; }
+    .intro p { margin: 16px 0 0; color: var(--muted); font-size: 1.02rem; }
+    .intro-aside { display: flex; align-items: center; gap: 13px; padding: 15px 17px; color: var(--muted); background: var(--panel); border-radius: 14px; font-size: .9rem; }
+    .sun { flex: 0 0 auto; width: 34px; height: 34px; border: 2px solid var(--coral); border-radius: 50%; box-shadow: 0 0 0 6px rgba(255,138,114,.12); }
+    .workspace { display: grid; grid-template-columns: minmax(275px, 355px) 1fr; gap: 22px; align-items: start; }
+    .controls, .result-wrap { border-radius: 20px; }
+    .controls { padding: 23px; background: var(--panel); }
+    .section-title { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 21px; font-size: 1.12rem; }
+    .section-title small { color: var(--muted); font-size: .78rem; font-weight: 500; }
+    fieldset { min-width: 0; margin: 0 0 21px; padding: 0; border: 0; }
+    legend { margin-bottom: 10px; color: var(--muted); font-size: .86rem; }
+    .choice-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .choice span { display: grid; min-height: 44px; place-items: center; padding: 7px 8px; color: var(--ink); background: var(--panel-soft); border: 1px solid transparent; border-radius: 10px; cursor: pointer; font-size: .88rem; text-align: center; transition: background .16s ease, border-color .16s ease, color .16s ease; }
+    .choice input:checked + span { color: var(--night); background: var(--lime); border-color: var(--lime); font-weight: 720; }
+    .choice input:focus-visible + span { outline: 3px solid var(--coral); outline-offset: 3px; }
+    .draw-button { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; color: var(--night); background: var(--lime); border: 0; border-radius: 12px; cursor: pointer; font-weight: 760; transition: transform .16s ease, filter .16s ease; }
+    .draw-button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    button:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+    .draw-icon { font-size: 1.25rem; line-height: 1; }
+    .result-wrap { min-height: 442px; padding: 17px; background: var(--panel-soft); }
+    .ticket { position: relative; display: flex; min-height: 408px; flex-direction: column; overflow: hidden; padding: clamp(24px, 4vw, 43px); color: var(--night); background: var(--ink); border-radius: 15px; }
+    .ticket::before, .ticket::after { position: absolute; top: 63%; width: 28px; height: 28px; content: ""; background: var(--panel-soft); border-radius: 50%; }
+    .ticket::before { left: -14px; }
+    .ticket::after { right: -14px; }
+    .ticket-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 18px; border-bottom: 1px dashed rgba(34,36,58,.3); }
+    .ticket-label { color: #656779; font-size: .78rem; letter-spacing: .07em; }
+    .ticket-meta { display: flex; gap: 8px; }
+    .pill { padding: 5px 10px; color: var(--night); background: #e6e7d8; border-radius: 999px; font-size: .78rem; font-weight: 650; }
+    .ticket-content { display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 23px 0; }
+    .ticket-kicker { margin: 0 0 8px; color: #77798a; font-size: .88rem; }
+    .activity-title { margin: 0; font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.17; letter-spacing: -.04em; }
+    .activity-desc { max-width: 520px; margin: 15px 0 0; color: #525466; font-size: 1rem; }
+    .start-hint { display: flex; gap: 10px; align-items: flex-start; margin-top: 23px; padding: 13px 15px; background: #e8eadb; border-radius: 10px; color: #424457; font-size: .9rem; }
+    .start-hint b { color: #5a6817; white-space: nowrap; }
+    .ticket-bottom { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-top: 15px; border-top: 1px dashed rgba(34,36,58,.3); }
+    .ticket-id { color: #77798a; font-size: .78rem; }
+    .result-actions { display: flex; gap: 8px; }
+    .soft-button { min-height: 39px; padding: 7px 13px; color: var(--night); background: transparent; border: 1px solid rgba(34,36,58,.25); border-radius: 9px; cursor: pointer; font-size: .85rem; font-weight: 650; }
+    .soft-button:hover { background: rgba(34,36,58,.07); }
+    .soft-button.primary { background: var(--night); color: var(--ink); border-color: var(--night); }
+    .empty-state { display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: flex-start; }
+    .empty-orbit { display: grid; width: 72px; height: 72px; place-items: center; margin-bottom: 20px; color: var(--night); background: var(--lime); border-radius: 50%; font-size: 2rem; }
+    .empty-state h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.2; }
+    .empty-state p { max-width: 400px; margin: 10px 0 0; color: #626477; }
+    .status { min-height: 1.5em; margin: 10px 3px 0; color: var(--muted); font-size: .83rem; }
+    .saved { margin-top: 23px; padding-top: 19px; border-top: 1px solid var(--line); }
+    .saved-heading { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+    .saved-heading h2 { margin: 0; font-size: .95rem; }
+    .saved-count { color: var(--muted); font-size: .78rem; }
+    .saved-list { display: grid; gap: 7px; }
+    .saved-empty { margin: 0; color: var(--muted); font-size: .82rem; }
+    .saved-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; color: var(--ink); background: rgba(255,255,255,.045); border-radius: 8px; font-size: .84rem; }
+    .saved-item button { flex: 0 0 auto; padding: 3px 5px; color: var(--muted); background: none; border: 0; cursor: pointer; font-size: .78rem; text-decoration: underline; text-underline-offset: 3px; }
+    footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 21px; color: var(--muted); font-size: .8rem; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 30px, 600px); padding-top: 20px; }
+      .intro { grid-template-columns: 1fr; gap: 20px; padding: 34px 0 23px; }
+      .intro-aside { max-width: 390px; }
+      .workspace { grid-template-columns: 1fr; gap: 14px; }
+      .controls { padding: 19px; }
+      .result-wrap { min-height: 380px; padding: 11px; }
+      .ticket { min-height: 356px; padding: 23px; }
+      .ticket::before, .ticket::after { top: 64%; }
+    }
+    @media (max-width: 420px) {
+      .page { width: calc(100% - 24px); }
+      .top-note { max-width: 145px; text-align: right; font-size: .76rem; }
+      .ticket-top { align-items: flex-start; flex-direction: column; gap: 9px; }
+      .ticket-bottom { align-items: flex-start; flex-direction: column; }
+      .ticket-id { display: none; }
+      .result-actions { width: 100%; }
+      .result-actions button { flex: 1; }
+      footer { flex-direction: column; gap: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="城市微冒險首頁"><span class="brand-mark" aria-hidden="true"></span><span>城市微冒險</span></a>
+      <span class="top-note">給日常一個小小的岔路</span>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">今天，想去哪裡<br>繞一小圈？</h1>
+          <p>挑一段空檔，讓城市替你出個主意。</p>
+        </div>
+        <aside class="intro-aside"><span class="sun" aria-hidden="true"></span><span>不用排行程，也不用走很遠。<br>一個小活動，就能換換空氣。</span></aside>
+      </section>
+
+      <section class="workspace" aria-label="挑選城市小活動">
+        <aside class="controls">
+          <h2 class="section-title">先選今天的狀態 <small>約 10 秒</small></h2>
+          <fieldset>
+            <legend>你有多少空檔？</legend>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="time" value="20" checked><span>20 分鐘</span></label>
+              <label class="choice"><input type="radio" name="time" value="40"><span>40 分鐘</span></label>
+              <label class="choice"><input type="radio" name="time" value="60"><span>60 分鐘</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>現在比較像哪種心情？</legend>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="mood" value="quiet" checked><span>想安靜</span></label>
+              <label class="choice"><input type="radio" name="mood" value="move"><span>想活動</span></label>
+              <label class="choice"><input type="radio" name="mood" value="curious"><span>想探索</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>想待在什麼地方？</legend>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="place" value="outdoor" checked><span>戶外</span></label>
+              <label class="choice"><input type="radio" name="place" value="indoor"><span>室內</span></label>
+              <label class="choice"><input type="radio" name="place" value="any"><span>都可以</span></label>
+            </div>
+          </fieldset>
+          <button class="draw-button" id="draw" type="button"><span class="draw-icon" aria-hidden="true">✳</span>幫我抽一個</button>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+          <section class="saved" aria-labelledby="saved-title">
+            <div class="saved-heading"><h2 id="saved-title">口袋清單</h2><span class="saved-count" id="saved-count">0 個收藏</span></div>
+            <div class="saved-list" id="saved-list"></div>
+          </section>
+        </aside>
+
+        <section class="result-wrap" aria-label="抽選結果">
+          <article class="ticket" id="ticket" aria-live="polite">
+            <div class="empty-state" id="empty-state">
+              <div class="empty-orbit" aria-hidden="true">↗</div>
+              <h2>留一點時間，<br>讓今天拐個彎。</h2>
+              <p>選好左邊的條件，按下抽選，看看附近有什麼小小的新鮮事。</p>
+            </div>
+            <div id="activity" hidden>
+              <div class="ticket-top">
+                <span class="ticket-label">你的城市微冒險</span>
+                <span class="ticket-meta"><span class="pill" id="activity-time"></span><span class="pill" id="activity-place"></span></span>
+              </div>
+              <div class="ticket-content">
+                <p class="ticket-kicker" id="activity-mood"></p>
+                <h2 class="activity-title" id="activity-title"></h2>
+                <p class="activity-desc" id="activity-desc"></p>
+                <div class="start-hint"><b>現在開始</b><span id="activity-hint"></span></div>
+              </div>
+              <div class="ticket-bottom">
+                <span class="ticket-id">小小出走，不必走遠</span>
+                <div class="result-actions">
+                  <button class="soft-button" id="copy" type="button">複製點子</button>
+                  <button class="soft-button" id="save" type="button">♡ 收藏</button>
+                  <button class="soft-button primary" id="reroll" type="button">再抽一個</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+    <footer><span>所有點子都不需預約，也不用特別準備。</span><span>收藏只會保存在這個瀏覽器裡。</span></footer>
+  </div>
+
+  <script>
+    "use strict";
+    const ideas = [
+      { id: "shade-route", title: "沿著樹蔭走一圈", kind: "慢慢走", minutes: 20, moods: ["quiet", "move"], place: "outdoor", desc: "挑一條有樹的街，慢慢走到下一個路口再折返。", hint: "穿上鞋，選一條還沒走過的巷子。" },
+      { id: "window-seat", title: "找間店坐窗邊", kind: "換個風景", minutes: 40, moods: ["quiet", "curious"], place: "indoor", desc: "帶一本書或什麼都不帶，觀察窗外的人來人往。", hint: "挑一家順路的小店，點杯喜歡的飲料。" },
+      { id: "market-color", title: "去市場找一種顏色", kind: "觀察遊戲", minutes: 40, moods: ["curious", "move"], place: "any", desc: "選一個顏色，沿路看看能不能找到五樣同色的東西。", hint: "先在心裡挑一個今天想收集的顏色。" },
+      { id: "cloud-watch", title: "找個地方看雲", kind: "放空一下", minutes: 20, moods: ["quiet"], place: "outdoor", desc: "坐下來抬頭看幾分鐘，幫飄過的雲取個名字。", hint: "找個不擋路的長椅或草地坐好。" },
+      { id: "bookshop", title: "逛一間沒去過的書店", kind: "翻翻看", minutes: 40, moods: ["quiet", "curious"], place: "indoor", desc: "不用找特定書，看看哪個封面或書名讓你停下來。", hint: "走進最近那間還沒逛過的小書店。" },
+      { id: "photo-hunt", title: "拍下三個有趣的門牌", kind: "街角探索", minutes: 40, moods: ["curious", "move"], place: "outdoor", desc: "留意街區的老門牌、特別的門把或窗花。", hint: "打開相機，往平常不會走的那條路出發。" },
+      { id: "stairs", title: "走一段平常搭電梯的樓梯", kind: "活動筋骨", minutes: 20, moods: ["move"], place: "indoor", desc: "選一棟安全開放的建築，輕鬆走幾層樓再回來。", hint: "找一段你熟悉又舒服的樓梯。" },
+      { id: "waterfront", title: "往有風的地方走走", kind: "吹吹風", minutes: 60, moods: ["quiet", "move"], place: "outdoor", desc: "去附近的河堤、公園或開闊廣場，讓風吹一會兒。", hint: "帶上水，挑一個離你不遠的開闊地。" },
+      { id: "postcard", title: "寫張明信片給未來的自己", kind: "慢下來", minutes: 20, moods: ["quiet"], place: "indoor", desc: "寫下最近一件小小的好事，留給一個月後的自己。", hint: "拿張紙，或打開手機備忘錄寫三句話。" },
+      { id: "new-snack", title: "試一樣沒吃過的小點心", kind: "味覺探險", minutes: 40, moods: ["curious"], place: "any", desc: "在附近挑一樣看起來陌生但有點吸引你的點心。", hint: "給自己一個小預算，去找一口新味道。" },
+      { id: "park-loop", title: "繞公園走兩圈", kind: "活動筋骨", minutes: 40, moods: ["move", "quiet"], place: "outdoor", desc: "不用計步，只要走完兩圈，看看公園裡正在發生什麼。", hint: "穿雙好走的鞋，從最近的公園入口開始。" },
+      { id: "gallery", title: "看一件展覽作品就好", kind: "看點新東西", minutes: 60, moods: ["quiet", "curious"], place: "indoor", desc: "去附近的展覽空間，只專心看一件最吸引你的作品。", hint: "看看附近藝文空間今天有沒有開放。" },
+      { id: "window-shopping", title: "逛一條沒走過的街", kind: "巷弄探險", minutes: 60, moods: ["curious", "move"], place: "outdoor", desc: "沿路看看招牌、窗景和店門口，選一個路口轉進去。", hint: "在熟悉的地圖上挑一條陌生的街。" },
+      { id: "tea-break", title: "泡杯茶，聽完一首歌", kind: "室內休息", minutes: 20, moods: ["quiet"], place: "indoor", desc: "把手機放遠一點，完整聽一首最近喜歡的歌。", hint: "選一首三到五分鐘的歌，替自己泡杯茶。" },
+      { id: "sunset", title: "找個高處看天色變化", kind: "傍晚散步", minutes: 60, moods: ["quiet", "curious"], place: "outdoor", desc: "去附近安全開放的高處或河岸，看天空慢慢換顏色。", hint: "留意日落時間，提早一點出門。" },
+      { id: "library", title: "去圖書館隨手翻一本書", kind: "安靜探索", minutes: 40, moods: ["quiet", "curious"], place: "indoor", desc: "不用借書也沒關係，找個座位讀幾頁感興趣的內容。", hint: "走到最近的圖書館，讓書架替你選方向。" }
+    ];
+    const moodLabels = { quiet: "適合慢慢來", move: "讓身體動一動", curious: "留心新鮮事" };
+    const placeLabels = { outdoor: "戶外", indoor: "室內", any: "室內外皆可" };
+    const storageKey = "city-micro-adventure-favorites-v1";
+    let currentIdea = null;
+    let previousId = null;
+    let favorites = loadFavorites();
+
+    const byId = (id) => ideas.find((idea) => idea.id === id);
+    function loadFavorites() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(stored) ? stored.filter((id) => ideas.some((idea) => idea.id === id)) : [];
+      } catch { return []; }
+    }
+    function persistFavorites() {
+      try { localStorage.setItem(storageKey, JSON.stringify(favorites)); }
+      catch { setStatus("瀏覽器目前無法儲存收藏；這次瀏覽期間仍可使用。"); }
+    }
+    function selected(name) { return document.querySelector(`input[name="${name}"]:checked`).value; }
+    function setStatus(message) { document.getElementById("status").textContent = message; }
+    function renderIdea(idea) {
+      currentIdea = idea;
+      document.getElementById("empty-state").hidden = true;
+      document.getElementById("activity").hidden = false;
+      document.getElementById("activity-time").textContent = `${idea.minutes} 分鐘`;
+      document.getElementById("activity-place").textContent = placeLabels[idea.place];
+      document.getElementById("activity-mood").textContent = idea.kind;
+      document.getElementById("activity-title").textContent = idea.title;
+      document.getElementById("activity-desc").textContent = idea.desc;
+      document.getElementById("activity-hint").textContent = idea.hint;
+      document.getElementById("save").textContent = favorites.includes(idea.id) ? "♥ 已收藏" : "♡ 收藏";
+      setStatus(`抽到「${idea.title}」，${idea.minutes} 分鐘可以完成。`);
+    }
+    function drawIdea() {
+      const maxTime = Number(selected("time"));
+      const mood = selected("mood");
+      const place = selected("place");
+      const matches = ideas.filter((idea) => idea.minutes <= maxTime && idea.moods.includes(mood) && (place === "any" || idea.place === place || idea.place === "any"));
+      if (!matches.length) {
+        setStatus("這組條件暫時沒有點子，試試選「都可以」或增加一點時間。");
+        return;
+      }
+      const options = matches.length > 1 ? matches.filter((idea) => idea.id !== previousId) : matches;
+      const chosen = options[Math.floor(Math.random() * options.length)];
+      previousId = chosen.id;
+      renderIdea(chosen);
+    }
+    function renderFavorites() {
+      const list = document.getElementById("saved-list");
+      const savedIdeas = favorites.map(byId).filter(Boolean);
+      document.getElementById("saved-count").textContent = `${savedIdeas.length} 個收藏`;
+      list.replaceChildren();
+      if (!savedIdeas.length) {
+        const empty = document.createElement("p");
+        empty.className = "saved-empty";
+        empty.textContent = "喜歡的點子會收在這裡。";
+        list.append(empty);
+        return;
+      }
+      savedIdeas.forEach((idea) => {
+        const row = document.createElement("div");
+        row.className = "saved-item";
+        const title = document.createElement("span");
+        title.textContent = idea.title;
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.textContent = "移除";
+        remove.setAttribute("aria-label", `移除收藏：${idea.title}`);
+        remove.addEventListener("click", () => toggleFavorite(idea));
+        row.append(title, remove);
+        list.append(row);
+      });
+    }
+    function toggleFavorite(idea) {
+      if (favorites.includes(idea.id)) {
+        favorites = favorites.filter((id) => id !== idea.id);
+        setStatus(`已從口袋清單移除「${idea.title}」。`);
+      } else {
+        favorites.push(idea.id);
+        setStatus(`已收藏「${idea.title}」。`);
+      }
+      persistFavorites();
+      renderFavorites();
+      if (currentIdea) document.getElementById("save").textContent = favorites.includes(currentIdea.id) ? "♥ 已收藏" : "♡ 收藏";
+    }
+
+    document.getElementById("draw").addEventListener("click", drawIdea);
+    document.getElementById("reroll").addEventListener("click", drawIdea);
+    document.getElementById("save").addEventListener("click", () => { if (currentIdea) toggleFavorite(currentIdea); });
+    document.getElementById("copy").addEventListener("click", async () => {
+      if (!currentIdea) return;
+      const text = `${currentIdea.title}\n${currentIdea.desc}\n現在開始：${currentIdea.hint}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("活動點子已複製，可以分享或留給自己。");
+      } catch {
+        setStatus("無法存取剪貼簿；請手動選取活動內容複製。 ");
+      }
+    });
+    renderFavorites();
+  </script>
+</body>
+</html>
